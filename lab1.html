@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memory Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 40px;
+    }
+    h2 { color: teal; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      background: gray;
+      font-size: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: transparent;
+    }
+    .flipped {
+      background: lightblue;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <h2>Memory Game</h2>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const cardsArray = ["🍎","🍌","🍓","🍇","🍎","🍌","🍓","🍇"];
+    let cardsChosen = [];
+    let cardsChosenId = [];
+    let cardsWon = [];
+
+    function createBoard() {
+      cardsArray.sort(() => 0.5 - Math.random()); // shuffle
+      for (let i = 0; i < cardsArray.length; i++) {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.setAttribute("data-id", i);
+        card.addEventListener("click", flipCard);
+        grid.appendChild(card);
+      }
+    }
+
+    function flipCard() {
+      let cardId = this.getAttribute("data-id");
+      if (cardsChosenId.includes(cardId) || cardsChosen.length === 2) return;
+      cardsChosen.push(cardsArray[cardId]);
+      cardsChosenId.push(cardId);
+      this.textContent = cardsArray[cardId];
+      this.classList.add("flipped");
+      if (cardsChosen.length === 2) {
+        setTimeout(checkMatch, 500);
+      }
+    }
+
+    function checkMatch() {
+      const cards = document.querySelectorAll(".card");
+      if (cardsChosen[0] === cardsChosen[1]) {
+        cardsWon.push(cardsChosen);
+      } else {
+        cards[cardsChosenId[0]].textContent = "";
+        cards[cardsChosenId[1]].textContent = "";
+        cards[cardsChosenId[0]].classList.remove("flipped");
+        cards[cardsChosenId[1]].classList.remove("flipped");
+      }
+      cardsChosen = [];
+      cardsChosenId = [];
+      if (cardsWon.length === cardsArray.length / 2) {
+        alert("You win! 🎉");
+      }
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
